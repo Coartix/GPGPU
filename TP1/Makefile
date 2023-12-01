@@ -1,0 +1,63 @@
+#!/usr/bin/make -f
+# ===========================================
+
+# Run this file with one of the following syntaxes:
+# - `make [-j] [all]`: build all binaries
+# - `make clean`: remove artifacts
+# - `make test`: build and run all tests
+# - `make test-BINARYNAME`: build and run a particular test
+
+# Source files: each ".cu" file is an independent program
+source_files := $(sort $(wildcard ?-*.cu))
+# Source kernel files: kernels.cu
+source_kernel_files := kernels.cu
+
+# Target binaries: we just remove the ".cu" from the filenames
+binaries := $(patsubst %.cu,%,$(source_files))
+
+# Tests: we generate "test-$BINNAME" targets from binary names
+tests := $(patsubst %,test-%,$(binaries))
+
+
+# Display the projected build process
+$(info )
+$(info Source files: $(source_files))
+$(info Available binary targets: $(binaries))
+$(info Available test targets: $(tests))
+$(info )
+
+# Rules
+# -------------------------------------------
+.PHONY: all
+all: $(binaries)
+	@echo "Target $@: COMPLETE"
+
+.PHONY: all
+clean:
+	rm -f $(binaries)
+	@echo "Target $@: COMPLETE"
+
+# Each binary is based only on the source ".cu" file.
+# We activate debugging information.
+$(binaries): %: %.cu kernels.o
+	nvcc -o $@ -g -G -I. $< kernels.o
+	@echo "Target $@: COMPLETE"
+
+# kernels.o: kernels.cu
+# 	nvcc -arch=sm_60 --expt-relaxed-constexpr -o $@ -g -G -dc $<
+# 	@echo "Target $@: COMPLETE"
+
+.PHONY: test $(tests)
+test: $(tests)
+	@echo "Target $@: COMPLETE"
+	@echo "Congratulations!"
+
+# Each test is based only on the associated binary.
+$(tests): test-%: %
+	@echo ""
+	@echo "Running test $@"
+	@echo "----------------"
+	./$<
+	@echo "^^^^^^^^^^^^^^^^"
+	@echo "Target $@: COMPLETE"
+	@echo ""

@@ -1,0 +1,9 @@
+Version; Time; Program
+version_all_cuda;0:00:03.251804574;cu
+version_baseline;0:00:30.087883472;cu
+version_final;0:00:03.263911308;cu
+version_lab_dist;0:00:09.895252171;cu
+version_mean;0:00:03.978671945;cu
+version_shrd_mem;0:00:07.819361286;cu
+version_uchar3;0:00:03.218251997;cu
+baseline;0:00:27.109233758;cpp
